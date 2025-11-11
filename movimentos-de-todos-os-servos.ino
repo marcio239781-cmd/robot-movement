@@ -1,7 +1,8 @@
 #include <Servo.h>
 
-// Cria o objeto do servo
+// Cria os objetos dos servos
 Servo baseServo;
+Servo ombroServo;
 
 // Configurações do servo base
 const int PINO_SERVO_BASE = A1;
@@ -9,11 +10,20 @@ const int ANGULO_MINIMO_BASE = 0;
 const int ANGULO_MAXIMO_BASE = 145;
 const int VELOCIDADE_BASE = 20;  // ms entre cada grau
 
+// Configurações do servo ombro
+const int PINO_SERVO_OMBRO = A2;
+const int ANGULO_MINIMO_OMBRO = 0;
+const int ANGULO_MAXIMO_OMBRO = 145;
+const int VELOCIDADE_OMBRO = 20;  // ms entre cada grau
+
 void setup() {
   inicializarComunicacaoSerial();
   inicializarServoBase();
+  inicializarServoOmbro();
   exibirConfiguracoesServoBase();
+  exibirConfiguracoesServoOmbro();
   moverServoBaseParaPosicaoInicial();
+  moverServoOmbroParaPosicaoInicial();
 }
 
 void loop() {
@@ -109,4 +119,77 @@ void exibirPosicaoAtualServoBase(int angulo) {
 
 void controlarVelocidadeMovimentoServoBase() {
   delay(VELOCIDADE_BASE);
+}
+
+// ========== FUNÇÕES DO OMBRO ===========
+
+void inicializarServoOmbro() {
+  ombroServo.attach(PINO_SERVO_OMBRO);
+  Serial.println("[SERVO-OMBRO] Servo do ombro inicializado");
+}
+
+void exibirConfiguracoesServoOmbro() {
+  Serial.print("[SERVO-OMBRO] Range angular: ");
+  Serial.print(ANGULO_MINIMO_OMBRO);
+  Serial.print(" a ");
+  Serial.print(ANGULO_MAXIMO_OMBRO);
+  Serial.println(" graus");
+  
+  Serial.print("[SERVO-OMBRO] Velocidade: ");
+  Serial.print(VELOCIDADE_OMBRO);
+  Serial.println(" ms/grau");
+  
+  Serial.println("[SERVO-OMBRO] Servo ombro inicializado e pronto para movimento");
+}
+
+void moverServoOmbroParaPosicaoInicial() {
+  Serial.println("[SERVO-OMBRO] Posicionando ombro na posição inicial...");
+  ombroServo.write(ANGULO_MINIMO_OMBRO);
+  delay(500);
+}
+
+void executarMovimentoIdaServoOmbro() {
+  Serial.println("[SERVO-OMBRO] --- MOVIMENTO DE IDA DO OMBRO ---");
+  
+  for (int angulo = ANGULO_MINIMO_OMBRO; angulo <= ANGULO_MAXIMO_OMBRO; angulo++) {
+    moverServoOmbroParaAngulo(angulo);
+  }
+  
+  Serial.println("[SERVO-OMBRO] Movimento de ida do ombro concluído");
+}
+
+void executarMovimentoVoltaServoOmbro() {
+  Serial.println("[SERVO-OMBRO] --- MOVIMENTO DE VOLTA DO OMBRO ---");
+  
+  for (int angulo = ANGULO_MAXIMO_OMBRO; angulo >= ANGULO_MINIMO_OMBRO; angulo--) {
+    moverServoOmbroParaAngulo(angulo);
+  }
+  
+  Serial.println("[SERVO-OMBRO] Movimento de volta do ombro concluído");
+}
+
+void executarPausaNoMaximoServoOmbro() {
+  Serial.println("[SERVO-OMBRO] Pausa no ponto máximo do ombro...");
+  delay(1000);
+}
+
+void executarPausaNoMinimoServoOmbro() {
+  Serial.println("[SERVO-OMBRO] Pausa no ponto mínimo do ombro...");
+  delay(1000);
+}
+
+void moverServoOmbroParaAngulo(int angulo) {
+  ombroServo.write(angulo);
+  exibirPosicaoAtualServoOmbro(angulo);
+  controlarVelocidadeMovimentoServoOmbro();
+}
+
+void exibirPosicaoAtualServoOmbro(int angulo) {
+  Serial.print("[SERVO-OMBRO] Movendo para: ");
+  Serial.print(angulo);
+  Serial.println("°");
+}
+
+void controlarVelocidadeMovimentoServoOmbro() {
+  delay(VELOCIDADE_OMBRO);
 }
