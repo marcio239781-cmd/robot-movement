@@ -3,6 +3,7 @@
 // Cria os objetos dos servos
 Servo baseServo;
 Servo ombroServo;
+Servo cotoveloServo;
 
 // Configurações do servo base
 const int PINO_SERVO_BASE = A1;
@@ -16,14 +17,23 @@ const int ANGULO_MINIMO_OMBRO = 0;
 const int ANGULO_MAXIMO_OMBRO = 145;
 const int VELOCIDADE_OMBRO = 20;  // ms entre cada grau
 
+// Configurações do servo cotovelo
+const int PINO_SERVO_COTOVELO = A3;
+const int ANGULO_MINIMO_COTOVELO = 0;
+const int ANGULO_MAXIMO_COTOVELO = 145;
+const int VELOCIDADE_COTOVELO = 20;  // ms entre cada grau
+
 void setup() {
   inicializarComunicacaoSerial();
   inicializarServoBase();
   inicializarServoOmbro();
+  inicializarServoCotovelo();
   exibirConfiguracoesServoBase();
   exibirConfiguracoesServoOmbro();
+  exibirConfiguracoesServoCotovelo();
   moverServoBaseParaPosicaoInicial();
   moverServoOmbroParaPosicaoInicial();
+  moverServoCotoveloParaPosicaoInicial();
 }
 
 void loop() {
@@ -192,4 +202,77 @@ void exibirPosicaoAtualServoOmbro(int angulo) {
 
 void controlarVelocidadeMovimentoServoOmbro() {
   delay(VELOCIDADE_OMBRO);
+}
+
+// ========== FUNÇÕES DO COTOVELO ===========
+
+void inicializarServoCotovelo() {
+  cotoveloServo.attach(PINO_SERVO_COTOVELO);
+  Serial.println("[SERVO-COTOVELO] Servo do cotovelo inicializado");
+}
+
+void exibirConfiguracoesServoCotovelo() {
+  Serial.print("[SERVO-COTOVELO] Range angular: ");
+  Serial.print(ANGULO_MINIMO_COTOVELO);
+  Serial.print(" a ");
+  Serial.print(ANGULO_MAXIMO_COTOVELO);
+  Serial.println(" graus");
+  
+  Serial.print("[SERVO-COTOVELO] Velocidade: ");
+  Serial.print(VELOCIDADE_COTOVELO);
+  Serial.println(" ms/grau");
+  
+  Serial.println("[SERVO-COTOVELO] Servo cotovelo inicializado e pronto para movimento");
+}
+
+void moverServoCotoveloParaPosicaoInicial() {
+  Serial.println("[SERVO-COTOVELO] Posicionando cotovelo na posição inicial...");
+  cotoveloServo.write(ANGULO_MINIMO_COTOVELO);
+  delay(500);
+}
+
+void executarMovimentoIdaServoCotovelo() {
+  Serial.println("[SERVO-COTOVELO] --- MOVIMENTO DE IDA DO COTOVELO ---");
+  
+  for (int angulo = ANGULO_MINIMO_COTOVELO; angulo <= ANGULO_MAXIMO_COTOVELO; angulo++) {
+    moverServoCotoveloParaAngulo(angulo);
+  }
+  
+  Serial.println("[SERVO-COTOVELO] Movimento de ida do cotovelo concluído");
+}
+
+void executarMovimentoVoltaServoCotovelo() {
+  Serial.println("[SERVO-COTOVELO] --- MOVIMENTO DE VOLTA DO COTOVELO ---");
+  
+  for (int angulo = ANGULO_MAXIMO_COTOVELO; angulo >= ANGULO_MINIMO_COTOVELO; angulo--) {
+    moverServoCotoveloParaAngulo(angulo);
+  }
+  
+  Serial.println("[SERVO-COTOVELO] Movimento de volta do cotovelo concluído");
+}
+
+void executarPausaNoMaximoServoCotovelo() {
+  Serial.println("[SERVO-COTOVELO] Pausa no ponto máximo do cotovelo...");
+  delay(1000);
+}
+
+void executarPausaNoMinimoServoCotovelo() {
+  Serial.println("[SERVO-COTOVELO] Pausa no ponto mínimo do cotovelo...");
+  delay(1000);
+}
+
+void moverServoCotoveloParaAngulo(int angulo) {
+  cotoveloServo.write(angulo);
+  exibirPosicaoAtualServoCotovelo(angulo);
+  controlarVelocidadeMovimentoServoCotovelo();
+}
+
+void exibirPosicaoAtualServoCotovelo(int angulo) {
+  Serial.print("[SERVO-COTOVELO] Movendo para: ");
+  Serial.print(angulo);
+  Serial.println("°");
+}
+
+void controlarVelocidadeMovimentoServoCotovelo() {
+  delay(VELOCIDADE_COTOVELO);
 }
